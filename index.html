@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Memory Demo</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- SCREEN 0: PIN gate — shown first, keeps casual visitors out -->
+  <section id="pin-screen" class="screen active">
+    <div class="ambient-bg"></div>
+    <h1 class="title">Memory Demo</h1>
+    <p class="subtitle">Enter PIN to continue</p>
+    <form id="pin-form" class="pin-form" autocomplete="off">
+      <input id="pin-input" class="pin-input" type="password" inputmode="numeric" maxlength="8" autocomplete="off" aria-label="PIN">
+      <button type="submit" class="unlock-btn">Unlock</button>
+    </form>
+    <p id="pin-error" class="pin-error"></p>
+  </section>
+
+  <!-- SCREEN 1: launch screen — choose the activity -->
+  <section id="launch-screen" class="screen">
+    <div class="ambient-bg"></div>
+    <h1 class="title">Memory Demo</h1>
+    <p class="subtitle">Choose an activity</p>
+    <div class="mode-choices">
+      <button id="start-numbers-btn" class="mode-card" type="button">
+        <span class="mode-glyph">123</span>
+        <span class="mode-label">Numbers</span>
+      </button>
+      <button id="start-colors-btn" class="mode-card" type="button">
+        <span class="mode-glyph mode-glyph-colors" aria-hidden="true"></span>
+        <span class="mode-label">Colours</span>
+      </button>
+    </div>
+  </section>
+
+  <!-- SCREEN 2: one persistent full-screen grid — typing, then the reveal -->
+  <section id="demo-screen" class="screen">
+    <div class="ambient-bg"></div>
+
+    <h1 id="demo-title" class="title demo-title">Memory Demo</h1>
+    <div id="stage-label" class="stage-label"></div>
+    <div id="thanks-name" class="thanks-name">Dr. Sireesha Swaroop</div>
+
+    <div class="grid" id="demo-grid"></div>
+
+    <div id="palette" class="palette"></div>
+
+    <button id="clear-btn" class="clear-btn" type="button">Clear All</button>
+    <div id="hint" class="hint"></div>
+  </section>
+
+  <script src="script.js"></script>
+</body>
+</html>
