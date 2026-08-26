@@ -467,6 +467,15 @@
     launchScreen.classList.add('active');
   }
 
+  function logout() {
+    try { sessionStorage.removeItem(PIN_SESSION_KEY); } catch (e) { /* ignore */ }
+    launchScreen.classList.remove('active');
+    pinScreen.classList.add('active');
+    pinInput.value = '';
+    pinError.textContent = '';
+    pinInput.focus();
+  }
+
   const MAX_PIN_ATTEMPTS = 5;
   const LOCKOUT_MS = 30000;
   let failedAttempts = 0;
@@ -517,6 +526,7 @@
 
   startNumbersBtn.addEventListener('click', () => enterDemo('numbers'));
   startColorsBtn.addEventListener('click', () => enterDemo('colors'));
+  document.getElementById('logout-btn').addEventListener('click', logout);
   clearBtn.addEventListener('click', clearAll);
 
   document.addEventListener('keydown', (e) => {
