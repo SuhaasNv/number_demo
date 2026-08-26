@@ -17,7 +17,10 @@ const MIME = {
 
 // Only these files are ever servable — nothing else in the folder
 // (server.js, package.json, etc.) is reachable over the network.
-const ALLOWED_FILES = new Set(['/index.html', '/style.css', '/script.js']);
+const ALLOWED_FILES = new Set([
+  '/index.html', '/style.css', '/script.js',
+  '/periodic.css', '/periodic.js', '/data/elements.js',
+]);
 
 // Security headers — the app is fully self-contained (no external scripts,
 // styles, fonts, or images), so the CSP can be locked down to 'self'.
