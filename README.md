@@ -12,7 +12,7 @@ She trains under **Squadron Leader Jayasimha** — a 14x Guinness World Record h
 3. **Fill the grid** — type 50 two-digit numbers, or paint 50 boxes from a 7-colour palette.
 4. **Lock it in** and step through the reveal: rows → columns → box numbers → a finale flourish → a thank-you screen.
 
-**Periodic Table** — a third discipline, fixed and always correct (no typing needed): all 118 elements, by atomic number, tiled onto one screen at a readable size. Click it and go straight into the same reveal rhythm — a fast cascading reveal, a finale, thank you.
+**Periodic Table** — a third discipline, fixed and always correct (no typing needed). Click it and go straight into a two-act reveal: first the real periodic table — all 118 elements in their official group/period positions, colour-coded by category with a legend, matching the standard printed chart — then a switch to a simpler two-column (number, name) list for the actual memorization proof, followed by a finale and thank you.
 
 ## 📸 Screenshots
 
@@ -27,8 +27,8 @@ She trains under **Squadron Leader Jayasimha** — a 14x Guinness World Record h
 | **Thank you** | ![Thank you screen](screenshots/07-thankyou.png) |
 | **Colours, filling in** | ![Colours fill](screenshots/08-colours-fill.png) |
 | **Colours, box numbers** | ![Colours boxes](screenshots/09-colours-boxes.png) |
-| **Periodic Table, ready** | ![Periodic table ready](screenshots/10-periodic-ready.png) |
-| **Periodic Table, revealed** | ![Periodic table revealed](screenshots/11-periodic-reveal.png) |
+| **Periodic Table, official layout** | ![Periodic table, real layout](screenshots/10-periodic-table.png) |
+| **Periodic Table, list format** | ![Periodic table, list](screenshots/11-periodic-list.png) |
 | **Periodic Table, thank you** | ![Periodic table thank you](screenshots/12-periodic-thankyou.png) |
 
 ## 🚀 Running it

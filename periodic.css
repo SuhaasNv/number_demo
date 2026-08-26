@@ -13,16 +13,143 @@
   overflow: hidden;
 }
 
+/* ---------- Stage 1: the real periodic table ---------- */
+/* The table and the list are stacked in the same grid cell (instead of one
+   after another in flow) so switching which one is visible is a pure
+   cross-fade — hiding one never reflows/jumps the other underneath it. */
+.pt-stack {
+  position: relative;
+  display: grid;
+}
+.pt-stack > * {
+  grid-area: 1 / 1;
+}
+
+.pt-wrap {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: clamp(0.3rem, 1vh, 0.6rem);
+  margin-top: clamp(0.3rem, 1vh, 0.8rem);
+  opacity: 1;
+  transition: opacity 0.5s ease;
+}
+.pt-wrap.hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.pt-legend {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.6rem 1rem;
+  font-size: clamp(0.55rem, 1.1vmin, 0.75rem);
+  color: #444;
+}
+.pt-legend-item { display: flex; align-items: center; gap: 0.3rem; }
+.pt-legend-swatch { width: 0.7em; height: 0.7em; border-radius: 3px; display: inline-block; }
+
+/* Height-driven sizing (not width/vmin) — the scarce dimension here is
+   vertical: table (7 rows) + f-block (2 rows) + header + legend all have
+   to fit in one viewport without the f-block running off the bottom. */
+.pt-table {
+  display: grid;
+  grid-template-columns: repeat(18, 1fr);
+  grid-template-rows: repeat(7, 1fr);
+  gap: 3px;
+  height: 54vh;
+  max-width: 98vw;
+  aspect-ratio: 18 / 7;
+}
+
+.pt-fblock {
+  display: grid;
+  grid-template-columns: repeat(14, 1fr);
+  grid-template-rows: repeat(2, 1fr);
+  gap: 3px;
+  height: calc(54vh * 2 / 7);
+  max-width: 82vw;
+  aspect-ratio: 7 / 1;
+}
+
+.pt-cell {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border-radius: 3px;
+  padding: 1px 2px;
+  opacity: 0;
+  transform: scale(0.5);
+  transition: opacity 0.3s ease, transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+  overflow: hidden;
+}
+.pt-cell.revealed {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.pt-num {
+  position: absolute;
+  top: 1px;
+  left: 2px;
+  font-size: clamp(0.5rem, 1.15vh, 0.75rem);
+  font-weight: 700;
+  color: #1a1a1a;
+}
+.pt-sym {
+  font-size: clamp(0.85rem, 2.4vh, 1.4rem);
+  font-weight: 800;
+  color: #1a1a1a;
+  line-height: 1;
+}
+.pt-name {
+  font-size: clamp(0.36rem, 0.85vh, 0.55rem);
+  color: #1a1a1a;
+  line-height: 1.05;
+  text-align: center;
+  white-space: normal;
+  overflow-wrap: break-word;
+  max-width: 100%;
+  padding: 0 1px;
+}
+.pt-weight {
+  font-size: clamp(0.32rem, 0.6vh, 0.42rem);
+  color: #1a1a1a;
+  opacity: 0.75;
+  line-height: 1;
+}
+
+.cat-alkali { background: #ff8a80; }
+.cat-alkaline-earth { background: #ffcc80; }
+.cat-transition { background: #ce93d8; }
+.cat-post-transition { background: #80cbc4; }
+.cat-metalloid { background: #e6ee9c; }
+.cat-reactive-nonmetal { background: #fff59d; }
+.cat-noble-gas { background: #f48fb1; }
+.cat-lanthanide { background: #90caf9; }
+.cat-actinide { background: #a5d6a7; }
+.cat-unknown { background: #e0e0e0; }
+
+@media (max-width: 700px), (max-height: 560px) {
+  .pt-num, .pt-name, .pt-weight { display: none; } /* symbol-only on tight screens — still legible */
+  .pt-sym { font-size: clamp(0.55rem, 2.8vmin, 1rem); }
+}
+
 .periodic-grid {
   position: relative;
   z-index: 1;
   display: grid;
-  grid-template-rows: repeat(20, auto);
+  grid-template-rows: repeat(16, auto);
   grid-auto-flow: column;
-  column-gap: clamp(0.8rem, 2.4vw, 2rem);
-  row-gap: 0.2rem;
+  column-gap: clamp(1rem, 2.8vw, 2.4rem);
+  row-gap: 0.35rem;
   margin-top: clamp(0.5rem, 1.5vh, 1rem);
-  max-height: 68vh;
+  max-height: 72vh;
   opacity: 1;
   transition: opacity 0.6s ease;
 }
@@ -52,33 +179,33 @@
 }
 
 .element-num {
-  min-width: 2.1rem;
+  min-width: 2.6rem;
   text-align: right;
   font-family: "SF Mono", "Courier New", monospace;
   font-weight: 700;
   color: #1a73e8;
-  font-size: clamp(0.7rem, 1.4vmin, 1rem);
+  font-size: clamp(0.95rem, 2vmin, 1.35rem);
 }
 
 .element-name {
   font-weight: 600;
   color: #111111;
-  font-size: clamp(0.75rem, 1.5vmin, 1.05rem);
+  font-size: clamp(1rem, 2.1vmin, 1.4rem);
   white-space: nowrap;
 }
 
 @media (max-width: 700px), (max-height: 560px) {
   .periodic-grid {
-    grid-template-rows: repeat(30, auto);
-    column-gap: 0.9rem;
-    max-height: 62vh;
+    grid-template-rows: repeat(26, auto);
+    column-gap: 1rem;
+    max-height: 66vh;
   }
-  .element-num { font-size: 0.65rem; min-width: 1.7rem; }
-  .element-name { font-size: 0.68rem; }
+  .element-num { font-size: 0.8rem; min-width: 2rem; }
+  .element-name { font-size: 0.85rem; }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .element-row {
+  .element-row, .pt-cell, .pt-wrap {
     transition: opacity 0.25s linear !important;
     transform: none !important;
   }
