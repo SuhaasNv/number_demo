@@ -20,6 +20,7 @@ const MIME = {
 const ALLOWED_FILES = new Set([
   '/index.html', '/style.css', '/script.js',
   '/periodic.css', '/periodic.js', '/data/elements.js',
+  '/countries.css', '/countries.js', '/data/countries.js',
 ]);
 
 // Security headers — the app is fully self-contained (no external scripts,

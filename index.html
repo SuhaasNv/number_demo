@@ -7,6 +7,7 @@
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%A7%A0%3C/text%3E%3C/svg%3E">
 <link rel="stylesheet" href="style.css">
 <link rel="stylesheet" href="periodic.css">
+<link rel="stylesheet" href="countries.css">
 </head>
 <body>
 
@@ -40,8 +41,25 @@
         <span class="mode-glyph">Pt</span>
         <span class="mode-label">Periodic Table</span>
       </button>
+      <button id="start-countries-btn" class="mode-card" type="button">
+        <span class="mode-glyph" aria-hidden="true">🌐</span>
+        <span class="mode-label">Countries</span>
+      </button>
     </div>
     <button id="logout-btn" class="logout-btn" type="button">Log Out</button>
+  </section>
+
+  <!-- SCREEN 1b: how many cells for Numbers / Colours -->
+  <section id="size-screen" class="screen">
+    <div class="ambient-bg"></div>
+    <h1 class="title">How many?</h1>
+    <p id="size-subtitle" class="subtitle">Choose 2 to 100 digits</p>
+    <form id="size-form" class="pin-form" autocomplete="off" novalidate>
+      <input id="size-input" class="pin-input size-input" type="text" inputmode="numeric" maxlength="3" value="100" autocomplete="off" aria-label="How many digits">
+      <button type="submit" class="unlock-btn">Start</button>
+    </form>
+    <p id="size-error" class="pin-error"></p>
+    <button id="size-back-btn" class="logout-btn" type="button">Back</button>
   </section>
 
   <!-- SCREEN 2: one persistent full-screen grid — typing, then the reveal -->
@@ -80,8 +98,33 @@
     <div id="periodic-hint" class="hint"></div>
   </section>
 
+  <!-- SCREEN 4: Countries & Capitals — world-map opener, then a searchable list -->
+  <section id="countries-screen" class="screen">
+    <div class="ambient-bg"></div>
+
+    <h1 class="title">Countries &amp; Capitals</h1>
+
+    <div class="cc-stack">
+      <div class="map-wrap" id="map-wrap">
+        <div class="continent-map" id="continent-map"></div>
+      </div>
+
+      <div class="search-wrap" id="search-wrap">
+        <div class="search-row">
+          <input id="country-search" class="country-search" type="text" placeholder="Search a country or capital…" autocomplete="off">
+          <span id="country-count" class="country-count"></span>
+        </div>
+        <div class="country-results" id="country-results"></div>
+      </div>
+    </div>
+
+    <div id="countries-hint" class="hint"></div>
+  </section>
+
   <script src="script.js"></script>
   <script src="data/elements.js"></script>
   <script src="periodic.js"></script>
+  <script src="data/countries.js"></script>
+  <script src="countries.js"></script>
 </body>
 </html>

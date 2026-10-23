@@ -2,7 +2,7 @@
 
 A little full-screen app built for one very specific, very special use case: **my mom's live memory demonstrations.**
 
-She trains under **Squadron Leader Jayasimha** — a 14x Guinness World Record holder, Chairman of the National Memory Council of India, and President of the World Memory Sports Council for India — and this app is her stage partner across three memory disciplines.
+She trains under **Squadron Leader Jayasimha** — a 14x Guinness World Record holder, Chairman of the National Memory Council of India, and President of the World Memory Sports Council for India — and this app is her stage partner across four memory disciplines.
 
 ## ✨ What it does
 
@@ -13,6 +13,8 @@ She trains under **Squadron Leader Jayasimha** — a 14x Guinness World Record h
 4. **Lock it in** and step through the reveal: rows → columns → box numbers → a finale flourish → a thank-you screen.
 
 **Periodic Table** — a third discipline, fixed and always correct (no typing needed). Click it and go straight into a two-act reveal: first the real periodic table — all 118 elements in their official group/period positions, colour-coded by category with a legend, matching the standard printed chart — then a switch to a simpler two-column (number, name) list for the actual memorization proof, followed by a finale and thank you.
+
+**Countries & Capitals** — a fourth activity, but a different kind of tool: not a memorize-then-prove-it reveal, a searchable reference. Opens on a stylized world map (continents cascading in with their country counts), then Space moves into a live-search list of all 193 UN member states plus the Holy See — full country and capital names, type to filter either one.
 
 ## 📸 Screenshots
 
@@ -30,6 +32,8 @@ She trains under **Squadron Leader Jayasimha** — a 14x Guinness World Record h
 | **Periodic Table, official layout** | ![Periodic table, real layout](screenshots/10-periodic-table.png) |
 | **Periodic Table, list format** | ![Periodic table, list](screenshots/11-periodic-list.png) |
 | **Periodic Table, thank you** | ![Periodic table thank you](screenshots/12-periodic-thankyou.png) |
+| **Countries, world map** | ![Countries map](screenshots/13-countries-map.png) |
+| **Countries, search** | ![Countries search](screenshots/14-countries-search.png) |
 
 ## 🚀 Running it
 
@@ -37,7 +41,7 @@ She trains under **Squadron Leader Jayasimha** — a 14x Guinness World Record h
 npm start
 ```
 
-Zero dependencies — a tiny Node server (`server.js`) serves a small set of static files (`index.html`, `style.css`, `script.js`, `periodic.css`, `periodic.js`, `data/elements.js`). Open the printed URL, or just open `index.html` directly.
+Zero dependencies — a tiny Node server (`server.js`) serves a small set of static files (`index.html`, `style.css`, `script.js`, `periodic.css`, `periodic.js`, `countries.css`, `countries.js`, `data/elements.js`, `data/countries.js`). Open the printed URL, or just open `index.html` directly.
 
 ## 🎛 Controls (once the reveal starts)
 

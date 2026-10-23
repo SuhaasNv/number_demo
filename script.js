@@ -1,9 +1,11 @@
 (() => {
   'use strict';
 
-  const ROWS = 5;
-  const COLS = 10;
-  const TOTAL = ROWS * COLS; // 50
+  const MAX_TOTAL = 50;
+  const MAX_COLS = 10;
+  let ROWS = 5;
+  let COLS = MAX_COLS;
+  let TOTAL = MAX_TOTAL; // set from the "How many?" step
   const STORAGE_KEYS = { numbers: 'numberDemoData', colors: 'colorDemoData' };
 
   // Change this before the show. Client-side only — stops casual snooping,
@@ -39,12 +41,12 @@
   let mode = null; // 'numbers' | 'colors'
   let phase = 'typing'; // 'typing' | 'reveal'
 
-  const boxEls = new Array(TOTAL);
-  const inputEls = new Array(TOTAL);   // numbers mode
-  const cornerEls = new Array(TOTAL);
-  const rowBadgeEls = new Array(ROWS);
-  const colBadgeEls = new Array(COLS);
-  let colorState = new Array(TOTAL).fill(''); // colors mode
+  let boxEls = [];
+  let inputEls = [];   // numbers mode
+  let cornerEls = [];
+  let rowBadgeEls = [];
+  let colBadgeEls = [];
+  let colorState = []; // colors mode
   let currentIndex = 0;                        // colors mode "cursor"
 
   // ---------------------------------------------------------
@@ -53,6 +55,13 @@
   // ---------------------------------------------------------
   function buildGrid() {
     demoGrid.innerHTML = '';
+    boxEls = new Array(TOTAL);
+    inputEls = new Array(TOTAL);
+    cornerEls = new Array(TOTAL);
+    rowBadgeEls = new Array(ROWS);
+    colBadgeEls = new Array(COLS);
+    demoGrid.style.setProperty('--rows', String(ROWS));
+    demoGrid.style.setProperty('--cols', String(COLS));
 
     const cornerBlank = document.createElement('div');
     demoGrid.appendChild(cornerBlank);
@@ -72,7 +81,7 @@
       demoGrid.appendChild(rb);
       rowBadgeEls[r] = rb;
 
-      for (let c = 0; c < COLS; c++) {
+      for (let c = 0; c < COLS && r * COLS + c < TOTAL; c++) {
         const i = r * COLS + c;
         const box = document.createElement('div');
         box.className = 'box revealed'; // visible immediately — she needs to see what she's filling in
@@ -118,8 +127,18 @@
     } catch (e) { /* ignore corrupt storage */ }
   }
 
+  // Overlay the first TOTAL values onto what is already saved, so cells past N keep their value.
+  function saveMerged(key, values) {
+    try {
+      let saved = [];
+      try { const old = JSON.parse(localStorage.getItem(key)); if (Array.isArray(old)) saved = old; } catch (e) { /* ignore corrupt storage */ }
+      values.forEach((v, i) => { saved[i] = v; });
+      localStorage.setItem(key, JSON.stringify(saved));
+    } catch (e) { /* ignore */ }
+  }
+
   function persistNumbers() {
-    try { localStorage.setItem(STORAGE_KEYS.numbers, JSON.stringify(inputEls.map((el) => el.value))); } catch (e) { /* ignore */ }
+    saveMerged(STORAGE_KEYS.numbers, inputEls.map((el) => el.value));
   }
 
   function focusCell(i) {
@@ -146,11 +165,10 @@
 
       input.addEventListener('keydown', (e) => {
         if (phase !== 'typing') return;
-        const row = Math.floor(i / COLS);
         if (e.key === 'ArrowRight') { e.preventDefault(); focusCell(i + 1); }
         else if (e.key === 'ArrowLeft') { e.preventDefault(); focusCell(i - 1); }
-        else if (e.key === 'ArrowDown') { e.preventDefault(); if (row < ROWS - 1) focusCell(i + COLS); }
-        else if (e.key === 'ArrowUp') { e.preventDefault(); if (row > 0) focusCell(i - COLS); }
+        else if (e.key === 'ArrowDown') { e.preventDefault(); focusCell(i + COLS); }
+        else if (e.key === 'ArrowUp') { e.preventDefault(); focusCell(i - COLS); }
         else if (e.key === 'Backspace' && input.value === '') { focusCell(i - 1); }
         else if ((e.key === 'Enter' || e.key === ' ') && allFilled()) { e.preventDefault(); lock(); }
       });
@@ -176,7 +194,7 @@
   }
 
   function persistColors() {
-    try { localStorage.setItem(STORAGE_KEYS.colors, JSON.stringify(colorState)); } catch (e) { /* ignore */ }
+    saveMerged(STORAGE_KEYS.colors, colorState);
   }
 
   // Picks black or white for the box-number corner label based on the
@@ -250,7 +268,7 @@
       if (allFilled()) {
         hintEl.textContent = 'Press Enter to begin';
       } else if (mode === 'numbers') {
-        hintEl.textContent = 'Type the 50 numbers · Tab / arrows to move';
+        hintEl.textContent = `Type the ${TOTAL * 2} digits, 2 per box · Tab / arrows to move`;
       } else {
         hintEl.textContent = 'Pick a colour for each box · click a box to jump to it';
       }
@@ -418,9 +436,12 @@
   // ---------------------------------------------------------
   // Screen flow
   // ---------------------------------------------------------
-  function enterDemo(chosenMode) {
+  function enterDemo(chosenMode, count) {
     mode = chosenMode;
     phase = 'typing';
+    TOTAL = count;
+    COLS = Math.min(MAX_COLS, count);
+    ROWS = Math.ceil(count / COLS);
     demoTitleEl.textContent = mode === 'numbers' ? 'Number Memory Demo' : 'Colour Memory Demo';
 
     buildGrid();
@@ -524,8 +545,53 @@
   if (alreadyUnlocked) unlockApp();
   else pinInput.focus();
 
-  startNumbersBtn.addEventListener('click', () => enterDemo('numbers'));
-  startColorsBtn.addEventListener('click', () => enterDemo('colors'));
+  // "How many?" step
+  const sizeScreen = document.getElementById('size-screen');
+  const sizeForm = document.getElementById('size-form');
+  const sizeInput = document.getElementById('size-input');
+  const sizeError = document.getElementById('size-error');
+  const sizeSubtitle = document.getElementById('size-subtitle');
+  let pendingMode = null;
+
+  function openSize(m) {
+    pendingMode = m;
+    sizeError.textContent = '';
+    const digits = m === 'numbers'; // numbers: 2 digits per box; colours: 1 box each
+    sizeInput.value = String(digits ? MAX_TOTAL * 2 : MAX_TOTAL);
+    sizeSubtitle.textContent = digits ? `Choose 2 to ${MAX_TOTAL * 2} digits` : `Choose 1 to ${MAX_TOTAL} boxes`;
+    launchScreen.classList.remove('active');
+    sizeScreen.classList.add('active');
+    sizeInput.focus();
+    sizeInput.select();
+  }
+
+  function closeSize() {
+    sizeScreen.classList.remove('active');
+    launchScreen.classList.add('active');
+  }
+
+  sizeForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const raw = sizeInput.value.trim();
+    const n = Number(raw);
+    const per = pendingMode === 'numbers' ? 2 : 1; // digits per box
+    if (!/^\d+$/.test(raw) || n < per || n > MAX_TOTAL * per || n % per) {
+      sizeError.textContent = per === 2
+        ? `Enter an even number of digits from 2 to ${MAX_TOTAL * 2}`
+        : `Enter a whole number from 1 to ${MAX_TOTAL}`;
+      sizeInput.focus();
+      return;
+    }
+    sizeScreen.classList.remove('active');
+    enterDemo(pendingMode, n / per);
+  });
+  document.getElementById('size-back-btn').addEventListener('click', closeSize);
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && sizeScreen.classList.contains('active')) { e.preventDefault(); closeSize(); }
+  });
+
+  startNumbersBtn.addEventListener('click', () => openSize('numbers'));
+  startColorsBtn.addEventListener('click', () => openSize('colors'));
   document.getElementById('logout-btn').addEventListener('click', logout);
   clearBtn.addEventListener('click', clearAll);
 
@@ -535,11 +601,10 @@
 
     if (phase === 'typing') {
       if (mode === 'colors') {
-        const row = Math.floor(currentIndex / COLS);
         if (e.key === 'ArrowRight') { e.preventDefault(); selectColorCell(Math.min(TOTAL - 1, currentIndex + 1)); }
         else if (e.key === 'ArrowLeft') { e.preventDefault(); selectColorCell(Math.max(0, currentIndex - 1)); }
-        else if (e.key === 'ArrowDown') { e.preventDefault(); if (row < ROWS - 1) selectColorCell(currentIndex + COLS); }
-        else if (e.key === 'ArrowUp') { e.preventDefault(); if (row > 0) selectColorCell(currentIndex - COLS); }
+        else if (e.key === 'ArrowDown') { e.preventDefault(); if (currentIndex + COLS < TOTAL) selectColorCell(currentIndex + COLS); }
+        else if (e.key === 'ArrowUp') { e.preventDefault(); if (currentIndex - COLS >= 0) selectColorCell(currentIndex - COLS); }
         else if (e.key === 'Backspace' || e.key === 'Delete') {
           e.preventDefault();
           colorState[currentIndex] = '';
