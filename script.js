@@ -275,7 +275,7 @@
     } else {
       hintEl.textContent = 'Space / → next stage · ← back · Home replay · Esc exit';
     }
-    clearBtn.classList.toggle('hide', phase !== 'typing');
+    clearBtn.classList.toggle('hide', phase !== 'typing' || mode === 'numbers'); // numbers boxes are read-only, nothing to clear
     paletteEl.classList.toggle('show', mode === 'colors' && phase === 'typing');
   }
 
@@ -583,11 +583,80 @@
       return;
     }
     sizeScreen.classList.remove('active');
-    enterDemo(pendingMode, n / per);
+    if (pendingMode === 'numbers') openLine(n); else enterDemo(pendingMode, n / per);
   });
+
+  // "Type the digits" step (numbers only)
+  const lineScreen = document.getElementById('line-screen');
+  const lineForm = document.getElementById('line-form');
+  const lineInput = document.getElementById('line-input');
+  const lineError = document.getElementById('line-error');
+  const lineSubtitle = document.getElementById('line-subtitle');
+  const lineFill = document.getElementById('line-fill');
+  let lineDigits = 0;
+  let lineLast = 0;
+  const lineDigitsOnly = () => lineInput.value.replace(/\D/g, '');
+
+  function openLine(n) {
+    lineDigits = n;
+    lineInput.value = '';
+    lineError.textContent = '';
+    lineSubtitle.textContent = `0 / ${n} digits`;
+    lineLast = 0;
+    lineFill.style.width = '0';
+    lineInput.style.height = '';
+    lineScreen.classList.add('active');
+    lineInput.focus();
+  }
+
+  function closeLine() {
+    lineScreen.classList.remove('active');
+    sizeScreen.classList.add('active');
+    sizeInput.focus();
+    sizeInput.select();
+  }
+
+  lineInput.addEventListener('input', (e) => {
+    let d = lineDigitsOnly().slice(0, lineDigits);
+    // Backspace that only removed a space/newline: drop the last digit instead
+    if (e.inputType === 'deleteContentBackward' && d.length === lineLast) d = d.slice(0, -1);
+    lineLast = d.length;
+    const pairs = d.match(/\d{1,2}/g) || [];
+    lineInput.value = pairs.map((p, i) => (i ? (i % 10 ? ' ' : '\n') : '') + p).join('');
+    lineInput.style.height = 'auto';
+    lineInput.style.height = lineInput.scrollHeight + 'px';
+    lineFill.style.width = `${(100 * d.length) / lineDigits}%`;
+    lineSubtitle.textContent = `${d.length} / ${lineDigits} digits`;
+    lineError.textContent = '';
+  });
+
+  document.getElementById('line-clear-btn').addEventListener('click', () => openLine(lineDigits));
+
+  lineInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') { e.preventDefault(); lineForm.requestSubmit(); }
+  });
+
+  lineForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const d = lineDigitsOnly();
+    if (d.length !== lineDigits) {
+      lineError.textContent = `Enter all ${lineDigits} digits (${d.length} so far)`;
+      lineInput.focus();
+      return;
+    }
+    lineScreen.classList.remove('active');
+    enterDemo('numbers', lineDigits / 2);
+    inputEls.forEach((el, i) => { el.value = d.slice(2 * i, 2 * i + 2); el.readOnly = true; }); // typed on the line screen; boxes are display only
+    persistNumbers();
+    updateHint();
+    focusCell(0);
+  });
+  document.getElementById('line-back-btn').addEventListener('click', closeLine);
   document.getElementById('size-back-btn').addEventListener('click', closeSize);
   document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape' && sizeScreen.classList.contains('active')) { e.preventDefault(); closeSize(); }
+    if (e.key !== 'Escape') return;
+    if (lineScreen.classList.contains('active')) { e.preventDefault(); closeLine(); }
+    else if (sizeScreen.classList.contains('active')) { e.preventDefault(); closeSize(); }
   });
 
   startNumbersBtn.addEventListener('click', () => openSize('numbers'));

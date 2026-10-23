@@ -62,6 +62,25 @@
     <button id="size-back-btn" class="logout-btn" type="button">Back</button>
   </section>
 
+  <!-- SCREEN 1c: type the digits in rows (Numbers only) -->
+  <section id="line-screen" class="screen">
+    <div class="ambient-bg"></div>
+    <h1 class="title">Type the digits</h1>
+    <p id="line-subtitle" class="subtitle">0 / 0 digits</p>
+    <form id="line-form" class="pin-form line-form" autocomplete="off" novalidate>
+      <div class="line-card">
+        <textarea id="line-input" class="line-input" rows="1" wrap="off" inputmode="numeric" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Start typing the digits" aria-label="Digits"></textarea>
+        <div class="line-bar"><i id="line-fill"></i></div>
+      </div>
+      <div class="line-actions">
+        <button id="line-clear-btn" class="logout-btn" type="button">Clear All</button>
+        <button type="submit" class="unlock-btn">Next</button>
+      </div>
+    </form>
+    <p id="line-error" class="pin-error"></p>
+    <button id="line-back-btn" class="logout-btn" type="button">Back</button>
+  </section>
+
   <!-- SCREEN 2: one persistent full-screen grid — typing, then the reveal -->
   <section id="demo-screen" class="screen">
     <div class="ambient-bg"></div>

@@ -61,6 +61,40 @@ button, input { touch-action: manipulation; } /* kill the mobile double-tap-to-z
   transition: box-shadow 0.15s ease, border-color 0.15s ease;
 }
 .pin-input.size-input { letter-spacing: 0; }
+.line-form { flex-direction: column; align-items: center; gap: 1.2rem; }
+.line-actions { display: flex; align-items: center; gap: 0.8rem; }
+.line-actions .logout-btn { margin-top: 0; }
+.line-card {
+  container-type: inline-size;
+  width: min(92vw, 46rem);
+  padding: 1.5rem 1.25rem 1.1rem;
+  background: #fff;
+  border: 1px solid #dfe3e8;
+  border-radius: 16px;
+  box-shadow: 0 6px 24px rgba(60, 64, 67, 0.08);
+  transition: box-shadow 0.15s ease, border-color 0.15s ease;
+}
+.line-card:focus-within {
+  border-color: #1a73e8;
+  box-shadow: 0 0 0 3px rgba(26, 115, 232, 0.15);
+}
+.line-input {
+  display: block;
+  width: 100%;
+  padding: 0;
+  font: 700 min(calc(100cqw / 19.6), 2.4rem) / 1.7 ui-monospace, Menlo, Consolas, monospace;
+  letter-spacing: 0.06em;
+  text-align: left;
+  color: #202124;
+  border: 0;
+  background: transparent;
+  outline: none;
+  resize: none;
+  overflow: hidden;
+}
+.line-input::placeholder { color: #9aa0a6; font-weight: 500; letter-spacing: 0; }
+.line-bar { height: 4px; margin-top: 1rem; border-radius: 2px; background: #eceff1; overflow: hidden; }
+.line-bar i { display: block; width: 0; height: 100%; background: #1a73e8; transition: width 0.15s ease; }
 .pin-input:focus {
   border-color: #1a73e8;
   box-shadow: 0 0 0 3px rgba(26, 115, 232, 0.15);
@@ -100,7 +134,8 @@ button, input { touch-action: manipulation; } /* kill the mobile double-tap-to-z
    SCREEN 1 — launch screen: choose the activity
    ========================================================= */
 #launch-screen,
-#size-screen {
+#size-screen,
+#line-screen {
   position: relative;
   justify-content: center;
   gap: 0.6rem;
@@ -108,9 +143,11 @@ button, input { touch-action: manipulation; } /* kill the mobile double-tap-to-z
   overflow: hidden;
 }
 #launch-screen .title,
-#size-screen .title { position: relative; z-index: 1; }
+#size-screen .title,
+#line-screen .title { position: relative; z-index: 1; }
 #launch-screen .subtitle,
-#size-screen .subtitle {
+#size-screen .subtitle,
+#line-screen .subtitle {
   position: relative;
   z-index: 1;
   font-size: clamp(0.9rem, 1.8vmin, 1.05rem);
