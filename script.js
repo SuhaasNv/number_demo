@@ -632,7 +632,7 @@
   document.getElementById('line-clear-btn').addEventListener('click', () => openLine(lineDigits));
 
   lineInput.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter') { e.preventDefault(); lineForm.requestSubmit(); }
+    if (e.key === 'Enter') { e.preventDefault(); e.stopPropagation(); lineForm.requestSubmit(); } // stop: the demo-screen Enter handler must not also see this keypress
   });
 
   lineForm.addEventListener('submit', (e) => {
