@@ -170,7 +170,6 @@
         else if (e.key === 'ArrowDown') { e.preventDefault(); focusCell(i + COLS); }
         else if (e.key === 'ArrowUp') { e.preventDefault(); focusCell(i - COLS); }
         else if (e.key === 'Backspace' && input.value === '') { focusCell(i - 1); }
-        else if ((e.key === 'Enter' || e.key === ' ') && allFilled()) { e.preventDefault(); lock(); }
       });
     });
   }
@@ -682,7 +681,8 @@
           updateHint();
         } else if ((e.key === 'Enter' || e.key === ' ') && allFilled()) { e.preventDefault(); lock(); }
       }
-      // numbers-mode typing keys are handled by the per-input listeners
+      // numbers mode: arrows/backspace live on the per-input listeners; Enter works even when no box has focus
+      else if ((e.key === 'Enter' || e.key === ' ') && allFilled()) { e.preventDefault(); lock(); }
       return;
     }
 
