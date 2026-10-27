@@ -503,3 +503,18 @@ button, input { touch-action: manipulation; } /* kill the mobile double-tap-to-z
   .box.finale-wave, .box.current { animation: none !important; }
   .pin-form.shake { animation: none !important; }
 }
+
+/* Numbers history on the size screen */
+.history { position: relative; z-index: 1; width: min(92vw, 30rem); margin-top: 0.4rem; }
+.history-head { font-size: 0.8rem; color: #5f6368; margin-bottom: 0.4rem; }
+.hist-item { display: flex; align-items: stretch; gap: 0.4rem; margin-top: 0.4rem; }
+.hist-use {
+  flex: 1; min-width: 0; text-align: left; padding: 0.55rem 0.8rem;
+  background: #fff; border: 1px solid #dfe3e8; border-radius: 10px; cursor: pointer;
+  font: 0.95rem 'Courier New', monospace; color: #202124;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.hist-use small { font: 0.75rem system-ui, sans-serif; color: #5f6368; margin-left: 0.5rem; }
+.hist-use:hover, .hist-use:focus-visible { border-color: #1a73e8; outline: none; box-shadow: 0 0 0 3px rgba(26, 115, 232, 0.15); }
+.hist-del { width: 2.2rem; background: #fff; border: 1px solid #dfe3e8; border-radius: 10px; cursor: pointer; color: #5f6368; font-size: 1.1rem; }
+.hist-del:hover { color: #c5221f; border-color: #c5221f; }

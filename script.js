@@ -552,6 +552,67 @@
   const sizeSubtitle = document.getElementById('size-subtitle');
   let pendingMode = null;
 
+  // Past number sets (digit strings), newest first
+  const HISTORY_KEY = 'numberDemoHistory';
+  const HISTORY_MAX = 10;
+  const historyEl = document.getElementById('history');
+  function loadHistory() {
+    try {
+      const h = JSON.parse(localStorage.getItem(HISTORY_KEY));
+      return Array.isArray(h) ? h.filter((d) => /^\d{2,}$/.test(d)) : [];
+    } catch (e) { return []; }
+  }
+  function saveHistory(list) {
+    try { localStorage.setItem(HISTORY_KEY, JSON.stringify(list.slice(0, HISTORY_MAX))); } catch (e) { /* ignore */ }
+  }
+  function addHistory(d) { saveHistory([d, ...loadHistory().filter((x) => x !== d)]); }
+  function renderHistory() {
+    const list = pendingMode === 'numbers' ? loadHistory() : [];
+    historyEl.hidden = list.length === 0;
+    historyEl.innerHTML = '';
+    if (!list.length) return;
+    const head = document.createElement('div');
+    head.className = 'history-head';
+    head.textContent = 'History \u00b7 click to reuse \u00b7 Esc on one removes it';
+    historyEl.appendChild(head);
+    list.forEach((d) => {
+      const row = document.createElement('div');
+      row.className = 'hist-item';
+      const use = document.createElement('button');
+      use.type = 'button';
+      use.className = 'hist-use';
+      use.dataset.digits = d;
+      use.textContent = d.match(/\d{1,2}/g).join(' ');
+      const n = document.createElement('small');
+      n.textContent = `${d.length} digits`;
+      use.appendChild(n);
+      use.addEventListener('click', () => { sizeScreen.classList.remove('active'); beginNumbers(d); });
+      const del = document.createElement('button');
+      del.type = 'button';
+      del.className = 'hist-del';
+      del.textContent = '\u00d7';
+      del.setAttribute('aria-label', 'Remove from history');
+      del.addEventListener('click', () => removeHistory(d));
+      row.append(use, del);
+      historyEl.appendChild(row);
+    });
+  }
+  function removeHistory(d) {
+    const rows = [...historyEl.querySelectorAll('.hist-use')];
+    const i = rows.findIndex((b) => b.dataset.digits === d);
+    saveHistory(loadHistory().filter((x) => x !== d));
+    renderHistory();
+    const left = [...historyEl.querySelectorAll('.hist-use')];
+    (left[Math.min(i, left.length - 1)] || sizeInput).focus();
+  }
+  function beginNumbers(d) {
+    enterDemo('numbers', d.length / 2);
+    inputEls.forEach((el, i) => { el.value = d.slice(2 * i, 2 * i + 2); el.readOnly = true; }); // typed on the line screen; boxes are display only
+    persistNumbers();
+    updateHint();
+    focusCell(0);
+  }
+
   function openSize(m) {
     pendingMode = m;
     sizeError.textContent = '';
@@ -560,12 +621,16 @@
     sizeSubtitle.textContent = digits ? `Choose 2 to ${MAX_TOTAL * 2} digits` : `Choose 1 to ${MAX_TOTAL} boxes`;
     launchScreen.classList.remove('active');
     sizeScreen.classList.add('active');
+    // go fullscreen on the click that opens this step: a later Enter press can come after the browser's gesture window has closed
+    if (document.documentElement.requestFullscreen) document.documentElement.requestFullscreen().catch(() => {});
+    renderHistory();
     sizeInput.focus();
     sizeInput.select();
   }
 
   function closeSize() {
     sizeScreen.classList.remove('active');
+    if (document.fullscreenElement && document.exitFullscreen) document.exitFullscreen().catch(() => {});
     launchScreen.classList.add('active');
   }
 
@@ -644,15 +709,27 @@
       return;
     }
     lineScreen.classList.remove('active');
-    enterDemo('numbers', lineDigits / 2);
-    inputEls.forEach((el, i) => { el.value = d.slice(2 * i, 2 * i + 2); el.readOnly = true; }); // typed on the line screen; boxes are display only
-    persistNumbers();
-    updateHint();
-    focusCell(0);
+    addHistory(d);
+    beginNumbers(d);
   });
   document.getElementById('line-back-btn').addEventListener('click', closeLine);
   document.getElementById('size-back-btn').addEventListener('click', closeSize);
   document.addEventListener('keydown', (e) => {
+    const onHist = document.activeElement && document.activeElement.classList.contains('hist-use');
+    if (onHist && (e.key === 'Escape' || e.key === 'Delete' || e.key === 'Backspace')) {
+      e.preventDefault(); e.stopPropagation(); removeHistory(document.activeElement.dataset.digits); return;
+    }
+    if (onHist && (e.key === 'ArrowDown' || e.key === 'ArrowUp')) {
+      e.preventDefault();
+      const all = [...historyEl.querySelectorAll('.hist-use')];
+      const j = all.indexOf(document.activeElement) + (e.key === 'ArrowDown' ? 1 : -1);
+      (all[j] || (j < 0 ? sizeInput : all[all.length - 1])).focus();
+      return;
+    }
+    if (sizeScreen.classList.contains('active') && e.key === 'ArrowDown') {
+      const first = historyEl.querySelector('.hist-use');
+      if (first) { e.preventDefault(); first.focus(); return; }
+    }
     if (e.key !== 'Escape') return;
     if (lineScreen.classList.contains('active')) { e.preventDefault(); closeLine(); }
     else if (sizeScreen.classList.contains('active')) { e.preventDefault(); closeSize(); }
